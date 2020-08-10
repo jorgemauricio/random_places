@@ -27,24 +27,28 @@ def main():
                Point(31.55, -113.18)]
 
     # list of points
-    coords = np.array([])
-
+    coords = dict()
+    no_points = 0
+    # loop points
     while len(coords) < 51:
         random_lat = random.uniform(26.74, 31.74)
         random_lon = random.uniform(-113.18, -109)
-
         p1 = Point(random_lat, random_lon)
-        while p1 in coords:
+
+        while [random_lat, random_lon] in coords.values():
             random_lat = random.uniform(26.74, 31.74)
             random_lon = random.uniform(-113.18, -109)
             p1 = Point(random_lat, random_lon)
 
         if is_within_polygon(polygon, p1):
-            coords = np.append (coords, [random_lat, random_lon])
+            coords["{}".format(no_points)] = [random_lat, random_lon]
 
-    file = open("Sonora.csv", "wb")
-    print(coords)
-    file.close()
+        no_points += 1
+
+    df = pd.DataFrame(coords)
+    df = df.transpose()
+    df.columns = ["lat", "long"]
+    df.to_csv("Sonora.csv")
 
 class Point:
     def __init__(self, x, y):
